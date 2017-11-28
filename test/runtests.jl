@@ -1,7 +1,5 @@
 using Base.Test
 using LFPTools
-using PyPlot
-
 
 """
 Create a signal with embedded line noise
