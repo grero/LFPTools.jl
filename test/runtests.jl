@@ -35,9 +35,12 @@ end
 function test()
     srand(1234)
     x, Y, t0 = generate_data()
-    Y2 = LFPTools.remove_linenoise(Y)
+    Y2,pp = LFPTools.remove_linenoise(Y)
     loss = norm(Y-Y2)
     @test loss ≈ 370.54919665078774
+    @test pp[1] ≈ 0.0002496514539056982
+    @test pp[2] ≈ 0.956753843020906
+    @test pp[3] ≈ -0.03364934764605101
 end
 
 @testset "Remove line noise" begin

@@ -29,7 +29,7 @@ Remove line noise at frequency `f0` Hz from the signal `Y`.
 function remove_linenoise(Y, f0=50.0, fs=30_000.0, x=(0.0:1/fs:(length(Y)-1)/fs))
     pp = estimate_sinusoid(Y, f0, fs, x)
     Y2 = sinfunc(x, f0, pp)
-    Y-Y2
+    Y-Y2, pp
 end
 
 end#module
