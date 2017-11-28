@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/grero/LFPTools.jl.svg?branch=master)](https://travis-ci.org/grero/LFPTools.jl)
 Introduction
 =============
 A collection of tools to work with continuous data typically obtained from electrophysiological experiments.
