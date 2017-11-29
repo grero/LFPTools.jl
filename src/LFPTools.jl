@@ -45,4 +45,17 @@ function remove_linenoise!(Y, pp, f0=50.0, fs=30_000.0)
     end
 end
 
+"""
+Align the continuous signal in `Yp` to the timestamps in `align_time`, using a window from `window[1]` to `window[2]`. Both `align_time` and `window` must be in units of the sample interval of `Yp`, given by the sampling rate `fs`.
+"""
+function align_lfp(Yp::Vector{T1}, align_time::Vector{Int64}, fs=30_000, window=(round(Int64,-0.1*fs),fs)) where T1 <: Real
+    ntrials = length(align_time)
+    T = window[2] - window[1] + 1
+    X = zeros(T, ntrials)
+    for (ii,tt) in enumerate(align_time)
+        X[:,ii] = Yp[(tt+window[1]):(tt+window[2])]
+    end
+    X
+end
+
 end#module
