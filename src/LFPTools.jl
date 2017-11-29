@@ -63,4 +63,18 @@ function align_lfp(Yp::Vector{T1}, align_time::Vector{Int64}, fs=30_000, window=
     X
 end
 
+"""
+Processing pipeline from raw signal to trial aligned LFP
+"""
+function process_signal(Y::Vector{T}, align_time::Vector{Int64}, fs=30_000) where T <: Real
+    pp = estimate_sinusoid(Y[1:fs], 50.0, fs)
+    Yp = copy(Y)
+    remove_linenoise!(Yp, pp, 50.0, fs)
+    Ybp = bandpass_filter(Yp, 20.0, 40.0,fs)
+    Xγ = align_lfp(Ybp, align_time)
+    Ybp = bandpass_filter(Yp, 0.1, 10.0,fs)
+    Xβ = align_lfp(Ybp, align_time)
+    Xβ, Xγ
+end
+
 end#module
