@@ -45,6 +45,11 @@ function remove_linenoise!(Y, pp, f0=50.0, fs=30_000.0)
     end
 end
 
+function bandpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000) where T <: Real
+    ff2 = digitalfilter(Bandpass(f1, f2;fs=fs), Butterworth(4))
+    filtfilt(ff2, Y)
+end
+
 """
 Align the continuous signal in `Yp` to the timestamps in `align_time`, using a window from `window[1]` to `window[2]`. Both `align_time` and `window` must be in units of the sample interval of `Yp`, given by the sampling rate `fs`.
 """
