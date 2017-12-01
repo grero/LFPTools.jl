@@ -26,17 +26,17 @@ end
 """
 Remove line noise at frequency `f0` Hz from the signal `Y`.
 """
-function remove_linenoise(Y, f0=50.0, fs=30_000.0, x=(0.0:1/fs:(length(Y)-1)/fs))
+function denoise(Y, f0=50.0, fs=30_000.0, x=(0.0:1/fs:(length(Y)-1)/fs))
     pp = estimate_sinusoid(Y, f0, fs, x)
     Y2 = copy(Y)
-    remove_linenoise!(Y2, pp, f0, fs)
+    denoise!(Y2, pp, f0, fs)
     Y2, pp
 end
 
 """
 Remove line noise at frequency `f0` in-place using the fitted parameters `pp`.
 """
-function remove_linenoise!(Y, pp, f0=50.0, fs=30_000.0)
+function denoise!(Y, pp, f0=50.0, fs=30_000.0)
     dt = 1/fs
     x = 0.0
     for i in 1:length(Y)
@@ -55,7 +55,7 @@ function lowpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000;do_resample=
     if scrub_linenoise
         #grab 1 second of data to estimate the sinusoid paramters
         pp = estimate_sinusoid(_ldata[1:fs], 50.0, fs)
-        remove_linenoise!(_ldata, pp, 50.0, fs)
+        denoise!(_ldata, pp, 50.0, fs)
     end
     #resample signal to 1000Hz
     ldata = resample(_ldata, 1000.0/fs)
@@ -80,7 +80,7 @@ Processing pipeline from raw signal to trial aligned LFP
 function process_signal(Y::Vector{T}, align_time::Vector{Int64}, fs=30_000) where T <: Real
     pp = estimate_sinusoid(Y[1:fs], 50.0, fs)
     Yp = copy(Y)
-    remove_linenoise!(Yp, pp, 50.0, fs)
+    denoise!(Yp, pp, 50.0, fs)
     Ybp = bandpass_filter(Yp, 20.0, 40.0,fs)
     Xγ = align_lfp(Ybp, align_time)
     Ybp = bandpass_filter(Yp, 0.1, 10.0,fs)
