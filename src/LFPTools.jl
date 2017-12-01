@@ -47,18 +47,18 @@ end
 
 function bandpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000) where T <: Real
     ff2 = digitalfilter(Bandpass(f1, f2;fs=fs), Butterworth(4))
-    filtfilt(ff2, Y)
+    filtfilt(ff2, Y), ff2
 end
 
 function lowpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000;do_resample=true, scrub_linenoise=true) where T <: Real
-    _ldata = bandpass_filter(Y, f1, f2,  fs)
+    _ldata, ff = bandpass_filter(Y, f1, f2,  fs)
     if scrub_linenoise
         #grab 1 second of data to estimate the sinusoid paramters
         pp = estimate_sinusoid(_ldata[1:fs], 50.0, fs)
         denoise!(_ldata, pp, 50.0, fs)
     end
     #resample signal to 1000Hz
-    ldata = resample(_ldata, 1000.0/fs)
+    ldata = resample(_ldata, 1000.0/fs), ff
 end
 
 """
