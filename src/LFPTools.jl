@@ -50,6 +50,17 @@ function bandpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000) where T <:
     filtfilt(ff2, Y)
 end
 
+function lowpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000;do_resample=true, scrub_linenoise=true) where T <: Real
+    _ldata = bandpass_filter(Y, f1, f2,  fs)
+    if scrub_linenoise
+        #grab 1 second of data to estimate the sinusoid paramters
+        pp = estimate_sinusoid(_ldata[1:fs], 50.0, fs)
+        remove_linenoise!(_ldata, pp, 50.0, fs)
+    end
+    #resample signal to 1000Hz
+    ldata = resample(_ldata, 1000.0/fs)
+end
+
 """
 Align the continuous signal in `Yp` to the timestamps in `align_time`, using a window from `window[1]` to `window[2]`. Both `align_time` and `window` must be in units of the sample interval of `Yp`, given by the sampling rate `fs`.
 """
