@@ -2,4 +2,4 @@ language: julia
 julia:
       - 0.6
 after_success:
-      - julia -e 'cd(Pkg.dir("LFPTools")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+      - julia -e 'cd(Pkg.dir("LFPTools")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Codecov.process_folder())'
