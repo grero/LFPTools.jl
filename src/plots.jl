@@ -26,12 +26,17 @@ function plot_lfp(Xβ::Matrix{Float64}, Xγ::Matrix{Float64}, x;labels=["0.1 - 1
     fig
 end
 
-"""
-Plot the time-frequency power spectrum of the signal `Y` sampled at sampling rate `fs`. The parameter `t0` indicates the time in seconds of the first point in `Y`. The optional parameeter `logscale` indicates wheter to plot the log of the power, and `interpolation` specifies an interpolation method (defaults to "sinc") to be applied to the image.
-"""
-function plot_spectrogram(Y::Vector{T}, t0::Real, fs=1000;fmax=fs/2, logscale=false, interpolation="sinc") where T <: Real
+function plot_spectrogram(Y::Vector{T}, args...;kvs...) where T <: Real
     fig = plt[:figure]()
     ax = fig[:add_subplot](111)
+    plot_spectrogram(ax, Y, args...;kvs...)
+    fig
+end
+
+"""
+Plot the time-frequency power spectrum of the signal `Y` sampled at sampling rate `fs` using the matplotlib axes object `ax`. The parameter `t0` indicates the time in seconds of the first point in `Y`. The optional parameeter `logscale` indicates wheter to plot the log of the power, and `interpolation` specifies an interpolation method (defaults to "sinc") to be applied to the image.
+"""
+function plot_spectrogram(ax, Y::Vector{T}, t0::Real, fs=1000;fmax=fs/2, logscale=false, interpolation="sinc",events=Float64[]) where T <: Real
     PP =  spectrogram(Y, fs=fs)
     fidx = find(PP.freq .<= fmax)
     if logscale
@@ -42,10 +47,16 @@ function plot_spectrogram(Y::Vector{T}, t0::Real, fs=1000;fmax=fs/2, logscale=fa
         clabel= "Power"
     end
     II = ax[:imshow](ppower[fidx,:];aspect="auto", extent=(t0, t0 + length(Y)/fs , PP.freq[1], PP.freq[fidx[end]]), origin="lower",interpolation=interpolation)
-    plt[:colorbar](II;label=clabel)
+    for ee in events
+        ax[:axvline](ee;color="w")
+    end
+    if length(ax[:figure][:axes])>1
+        plt[:colorbar](II,cax=ax[:figure][:axes][2];label=clabel)
+    else
+        plt[:colorbar](II;label=clabel)
+    end
     ax[:set_xlabel]("Time [s]")
     ax[:set_ylabel]("Frequency [Hz]")
     ax[:spines]["right"][:set_visible](false)
     ax[:spines]["top"][:set_visible](false)
-    fig
 end
