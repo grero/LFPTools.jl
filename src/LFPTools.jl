@@ -71,7 +71,8 @@ function align_lfp(Yp::Vector{T1}, align_time::Vector{Int64}, fs=30_000, window=
     for (ii,tt) in enumerate(align_time)
         X[:,ii] = Yp[(tt+window[1]):(tt+window[2])]
     end
-    X
+    x = (window[1]/fs):(1/fs):(window[2]/fs)
+    X, x
 end
 
 """
