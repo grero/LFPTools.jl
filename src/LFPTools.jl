@@ -19,7 +19,7 @@ function estimate_sinusoid(Y::AbstractVector{T}, f0=50.0,fs=30_000.0, x=(0.0:1/f
     Y2 = filtfilt(ff2, Y)
     YY = zeros(Y2)
     func(x,p) = sinfunc!(YY, x, f0, p)
-    pp = curve_fit(func, x, Y2, [0.0, 1.0, 0.0])
+    pp = curve_fit(func, x, Y2, [zero(T), one(T), zero(T)])
     pp.param
 end
 
