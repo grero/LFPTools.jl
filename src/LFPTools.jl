@@ -83,10 +83,10 @@ function process_signal(Y::Vector{T}, align_time::Vector{Int64}, fs=30_000) wher
     Yp = copy(Y)
     denoise!(Yp, pp, 50.0, fs)
     Ybp = bandpass_filter(Yp, 20.0, 40.0,fs)
-    Xγ = align_lfp(Ybp, align_time)
+    Xγ, x = align_lfp(Ybp, align_time)
     Ybp = bandpass_filter(Yp, 0.1, 10.0,fs)
-    Xβ = align_lfp(Ybp, align_time)
-    Xβ, Xγ
+    Xβ, x = align_lfp(Ybp, align_time)
+    Xβ, Xγ, x
 end
 
 end#module
