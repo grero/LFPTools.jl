@@ -45,6 +45,22 @@ function denoise!(Y, pp, f0=50.0, fs=30_000.0)
     end
 end
 
+"""
+Attempts to isolate signal with base frequency `f0` by circularly shifting `Y` by `fs/f0` points `n` times and taking the average over each shift.  
+"""
+function find_periodic_signal(Y::Vector{T}, f0::Real, fs=30_000) where T <: Real
+    Z = zeros(length(Y))
+    Yp = copy(Y)
+    period = round(Int64,div(fs,f0))
+    n = min(div(length(Y),period),100)
+    for i in 1:n
+        Z .+= Yp
+        circshift!(Yp,Y, i*period)
+    end
+    Z ./= n
+    Z
+end
+
 function bandpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000) where T <: Real
     ff2 = digitalfilter(Bandpass(f1, f2;fs=fs), Butterworth(4))
     filtfilt(ff2, Y), ff2
