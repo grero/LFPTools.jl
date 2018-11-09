@@ -1,0 +1,8 @@
+name = "LFPTools"
+uuid = "866d65e9-058e-5bfa-9da5-d9c726f474de"
+authors = ["Roger Herikstad <roger.herikstad@gmail.com"]
+version = "0.1.0"
+
+[deps]
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
+LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
