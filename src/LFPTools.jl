@@ -48,17 +48,18 @@ end
 """
 Attempts to isolate signal with base frequency `f0` by circularly shifting `Y` by `fs/f0` points `n` times and taking the average over each shift.  
 """
-function find_periodic_signal(Y::Vector{T}, f0::Real, fs=30_000) where T <: Real
+function find_periodic_signal(Y::Vector{T}, f0::Real, fs=30_000, nshifts=100) where T <: Real
+    ny = length(Y)
     Z = zeros(length(Y))
     Yp = copy(Y)
     period = round(Int64,div(fs,f0))
-    n = min(div(length(Y),period),100)
-    for i in 1:n
+    for i in 1:nshifts
+        j = rand(-ny:ny)
         Z .+= Yp
-        circshift!(Yp,Y, i*period)
+        circshift!(Yp,Y, j*period)
     end
-    Z ./= n
-    Z
+    Z ./= nshifts
+    Z-mean(Y)
 end
 
 function bandpass_filter(Y::Vector{T}, f1::Real, f2::Real, fs=30_000) where T <: Real
