@@ -9,12 +9,12 @@ function generate_data()
     fs = 30_000.0
     #create a 10 second long signal
     x = 0:1/fs:10.0
-    Y = zeros(length(x))
+    Ys = 1.0*sin.(2*pi*50.0*x)
+    Y = copy(Ys)
     #random walk
     for i in 2:length(x)
         Y[i] = Y[i-1] + 0.1*randn(RNG)
     end
-    Y .+= 1.0*sin.(2*pi*50.0*x)
 
     #create a gamma modulation lasting 100ms at random points
     tt = 0.0:1/fs:0.1
@@ -23,12 +23,12 @@ function generate_data()
     _t0 = rand(RNG, 1:2*length(V))
     for i in 1:length(x)-length(V)
         if i - _t0 >= 2*length(V)
-            _t0 = rand(RNG, i:i+2*length(V))
+            _t0 = rand(RNG, i:i+length(V))
             push!(t0, _t0)
             Y[_t0:_t0+length(V)-1] .+= V
         end
     end
-    x,Y, t0
+    x,Y, t0, Ys
 end
 
 function test()
@@ -44,4 +44,12 @@ end
 
 @testset "Remove line noise" begin
     test()
+end
+
+@testset "Remove line noise II" begin
+    srand(1234)
+    x,Y,t0,Ys = generate_data()
+    Z = LFPTools.find_periodic_signal(Y,50.0)
+    Y2 = Y-Z
+    loss = norm(Y-Y2)
 end
